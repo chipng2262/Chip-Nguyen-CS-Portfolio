@@ -1,0 +1,62 @@
+## Chip Nguyen, CS50 Spring 2023
+## testing.sh provides test cases to test words.c
+
+## Standard input
+echo "My name is Chip" | ./words
+My
+name
+is
+Chip
+
+## Input with numbers and non-letter characters. Those should not appear in the output.
+echo "She's 11 years old!" | ./words
+She
+s
+years
+old
+
+## A blank file
+./words blankfile.txt
+
+## A valid file
+./words testfile_1.txt
+Testing
+file
+number
+
+## A file that does not exist
+./words chip.sh
+File chip.sh does not exist or is unreadable. 
+
+## A "-" file
+echo "Input for hyphen file" | ./words -
+Input
+for
+hyphen
+file
+
+## A file name followed by a hyphen
+echo "File followed by hypen" | ./words testfile_1.txt -
+Testing
+file
+number
+File
+followed
+by
+hypen
+
+## A file name, a hyphen, then a file name
+echo "This should be in the middlle" | ./words testfile_1.txt - testfile_2.txt
+Testing
+file
+number
+This
+should
+be
+in
+the
+middlle
+Test
+file
+number
+two
