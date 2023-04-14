@@ -1,3 +1,5 @@
+# C Program Descriptions
+
 This repository contains my work for Lab 2 of CS50, Spring 2023 at Dartmouth College.
 
 **chill** contains a C program to calculate and tabulate wind chill based on the current temperature and wind speed. 
