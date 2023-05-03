@@ -1,0 +1,19 @@
+gcc -Wall -pedantic -std=c11 -ggdb  -I../lib   -c -o hashtabletest.o hashtabletest.c
+gcc -Wall -pedantic -std=c11 -ggdb  -I../lib hash.o hashtabletest.o hashtable.o ../lib/file.o ../lib/mem.o ../set/set.o  -o hashtabletest
+echo "Testing" | ./hashtabletest
+Table with 5 slots successfully created.
+
+Add 3 valid key-value pairs and some invalid ones. A duplicate key-item pair is also added
+Hash table after adding (Should have 3 non-empty sets, duplicate pair not added): 
+{}
+{(CN: Chip)}
+{(CP: Charles)}
+{}
+{(AN: Anna)}
+
+Test hashtable_iterate: should give count of table = 3: 3
+Result from a valid find of key = AN: Anna
+Result from an invalid find of key = PQ, which doesn't exist: (null)
+Result from an invalid find from a NULL hashtable: (null)
+
+Table deleted.

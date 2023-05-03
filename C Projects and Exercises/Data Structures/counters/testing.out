@@ -1,0 +1,24 @@
+echo "Testing" | ./counterstest
+Create new counter with counters_new.
+Counter created successfully.
+
+Add an invalid (NULL) counter.
+Add a valid counter but negative key.
+Add two valid counter with valid keys = 2 and 10.
+Current counter should be {10=1, 2=1}: {10=1, 2=1}
+
+Add a counter with valid key = 2 again.
+Current counter should be {10=1, 2=2}: {10=1, 2=2}
+
+Set counter with a negative key.
+Set counter with a negative count.
+Set a non-existing key = 8 to 9.
+Set the existing key = 10 to 11.
+Current counter should be {8=9, 10=11, 2=2}: {8=9, 10=11, 2=2}
+
+Call counter_get on a non-existent key (should return zero): 0
+Call using the existing key 8 (should return 9): 9
+
+Number of elements in set counter (should be 3): 3
+
+Counter deleted.

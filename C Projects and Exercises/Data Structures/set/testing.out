@@ -1,0 +1,27 @@
+gcc -Wall -pedantic -std=c11 -ggdb -DMEMTEST -I../lib   -c -o settest.o settest.c
+gcc -Wall -pedantic -std=c11 -ggdb -DMEMTEST -I../lib settest.o set.o ../lib/file.o ../lib/mem.o  -o settest
+./settest < test.names
+Create set with set_new.
+Set 1 created successfully.
+
+Test insert with null set, good key and item: {}
+Test insert with valid set, null key and good item: {}
+Test insert with null set, null key, and null item: {}
+Number of elements in set 1 (should be zero): 0
+
+Add 4 elements to the set.
+Count after adding (should be 4): 4
+
+Test set print. The set is:
+{(S, Sean), (K, Kim), (M, Mary), (P, Peter)}
+
+Add a key that already exists. Set shouldn't change: 
+{(S, Sean), (K, Kim), (M, Mary), (P, Peter)}
+
+Test set print for a null set:(null)
+
+Test set_find with a key that doesn't exist: Output of find: (null)
+Test set_find with a null set: Output of find: (null)
+Test set find with a key Peter that exists: Output of find: (null)
+
+Delete the set.
