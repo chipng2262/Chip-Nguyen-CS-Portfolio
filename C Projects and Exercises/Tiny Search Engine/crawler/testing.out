@@ -1,0 +1,28 @@
+Testing for crawler.c
+
+Make directory data with subdirectories to store testing outputs.
+
+==========
+Testing non-valid arguments. make test would exit with error
+
+Test with invalid number of arguments:
+Error: Invalid number of arguments. Make sure there are only 3.
+
+Test with an invalid (null) directory:
+Error: Invalid page directory.
+
+Test with an invalid (non-existent) directory:
+Error: Invalid page directory.
+
+Test with invalid depth (>10):
+Error: Depth out of range.
+
+Test with invalid depth (depth is passed in as a string):
+Error: Please input a number for depth instead.
+
+==========
+Testing valid cases.
+
+Crawl http://cs50tse.cs.dartmouth.edu/tse/letters/index.html at depth 0,2, and 10 and write output to data/letters-(depth).
+Crawl http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html at depth 0 and 1 and write output to data/toscrape-(depth)
+Crawl http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html at depth 0 and 1 and write output to data/wikipedia-(depth)

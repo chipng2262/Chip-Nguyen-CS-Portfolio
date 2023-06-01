@@ -1,0 +1,247 @@
+## Chip Nguyen, CS50 Spring 2023
+## testing.sh provides test cases to test the querier
+
+# TESTS FOR INVALID NUMBER OF ARGUMENTS --------------------------------------------------
+
+# No argument
+./querier
+Error: invalid number of arguments.
+
+# One argument
+./querier ../data/letters-2 
+Error: invalid number of arguments.
+
+# Three arguments - way too many
+./querier ../data/letters-2 ../data/letters-2/letters-2.index make
+Error: invalid number of arguments.
+
+# TESTS FOR INVALID FILE PATHS -----------------------------------------------------------
+
+# Non-existent pageDirectory
+./querier ../data/dummyfile ../data/letters-2/letters-2.index
+Error: invalid page directory.
+
+# pageDirectory exists but not produced by crawler
+./querier ../common ../data/letters-2/letters-2.index 
+Error: invalid page directory.
+
+# Non-existent indexFile
+./querier ../data/letters-2 ../data/letters-2/dummyfile
+Error: invalid index file name.
+
+# TESTS FOR INVALID OPERATOR POSITIONS -----------------------------------------------------
+
+# 'and' and 'or' at beginning
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "and home"
+Query? 
+Query: and home 
+Error: 'and' or 'or' cannot be first.
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "or school"
+Query? 
+Query: or school 
+Error: 'and' or 'or' cannot be first.
+
+# 'and' and 'or' at the end
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "home or school and"
+Query? 
+Query: home or school and 
+Error: 'and' and 'or' cannot be last.
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "home and school or"
+Query? 
+Query: home and school or 
+Error: 'and' and 'or' cannot be last.
+
+# 'and' and 'or' next to each other
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "home or and school"
+Query? 
+Query: home or and school 
+Error: 'or' and 'and' can't be adjacent.
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "home and or school"
+Query? 
+Query: home and or school 
+Error: 'and' and 'or' can't be adjacent.
+
+# TESTS FOR INVALID CHARACTERS ------------------------------------------------------------
+
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "home or school,"
+Query? 
+Error: bad character in query.
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "home ! and school"
+Query? 
+Error: bad character in query.
+
+# TESTS FOR BLANK SPACES AND CAPITAL LETTERS IN QUERY -------------------------------------
+# To make sure normalization and tokenization works as intended
+
+# Leading and trailing blank spaces in query
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "    home     or     for       "
+Query? 
+Query: home or for 
+score  3 doc  1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html 
+score  2 doc  2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html 
+score  2 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+
+Query? 
+# Capital letters
+./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "hOmE OR FOR"
+Query? 
+Query: home or for 
+score  3 doc  1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html 
+score  2 doc  2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html 
+score  2 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+
+Query? 
+# TESTS FOR VALID CASES -------------------------------------------------------------------
+# Just one word
+./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "for"
+Query? 
+Query: for 
+score  1 doc  1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/letters/E.html 
+score  1 doc  5: http://cs50tse.cs.dartmouth.edu/tse/letters/G.html 
+score  1 doc  6: http://cs50tse.cs.dartmouth.edu/tse/letters/H.html 
+score  1 doc  7: http://cs50tse.cs.dartmouth.edu/tse/letters/F.html 
+score  1 doc  8: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html 
+score  1 doc  9: http://cs50tse.cs.dartmouth.edu/tse/letters/C.html 
+
+Query? 
+# Just one word (but doesnt exist)
+./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "chipnguyen"
+Query? 
+Query: chipnguyen 
+No documents found.
+
+Query? 
+# 2 words in an "and" sequence, 1 doesn't exist
+./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "chipnguyen and for"
+Query? 
+Query: chipnguyen and for 
+No documents found.
+
+Query? 
+# 2 words
+./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "for and search"
+Query? 
+Query: for and search 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+score  1 doc  8: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html 
+
+Query? ./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "for or search"
+Query? 
+Query: for or search 
+score  2 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+score  2 doc  8: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html 
+score  1 doc  1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/letters/E.html 
+score  1 doc  5: http://cs50tse.cs.dartmouth.edu/tse/letters/G.html 
+score  1 doc  6: http://cs50tse.cs.dartmouth.edu/tse/letters/H.html 
+score  1 doc  7: http://cs50tse.cs.dartmouth.edu/tse/letters/F.html 
+score  1 doc  9: http://cs50tse.cs.dartmouth.edu/tse/letters/C.html 
+
+Query? 
+# More than 3 words
+./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "search for home"
+Query? 
+Query: search for home 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+score  1 doc  8: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html 
+
+Query? ./querier ../data/letters-10 ../data/letters-10/letters-10.index <<< "search and for home"
+Query? 
+Query: search and for home 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+score  1 doc  8: http://cs50tse.cs.dartmouth.edu/tse/letters/D.html 
+
+Query? 
+# With fuzzquery
+./fuzzquery ../data/wikipedia-1/wikipedia-1.index 10 1 | ./querier ../data/wikipedia-1 ../data/wikipedia-1/wikipedia-1.index
+./fuzzquery: generating 10 queries from 6506 words
+Query? 
+Query: removebefore and outdoors 
+No documents found.
+
+Query? 
+Query: comparable or productivity lowercase or certainly manipulations 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html 
+score  1 doc  7: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html 
+
+Query? 
+Query: possible identifies or espa 
+score  2 doc  7: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html 
+score  1 doc  5: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html 
+score  1 doc  6: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html 
+
+Query? 
+Query: endlessly backwards brezhoneg or fire or curdled or arbitrary 
+score  4 doc  3: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html 
+score  4 doc  6: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html 
+score  1 doc  7: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html 
+score  1 doc  5: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html 
+
+Query? 
+Query: memory or option physics osi and express or sandra 
+score 31 doc  6: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html 
+score 23 doc  2: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html 
+score 16 doc  3: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html 
+score  5 doc  5: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html 
+score  3 doc  7: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html 
+
+Query? 
+Query: otherunix archives tuck verlag or probable 
+score  1 doc  3: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html 
+
+Query? 
+Query: tying 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html 
+
+Query? 
+Query: parametric sketched or round 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html 
+score  1 doc  5: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html 
+
+Query? 
+Query: transferred 
+score  1 doc  5: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html 
+
+Query? 
+Query: sometimes or controlled or several and runs and ignored 
+score  7 doc  6: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html 
+score  3 doc  5: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html 
+score  2 doc  3: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html 
+score  1 doc  4: http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html 
+
+Query? 
+
+# VALGRIND TEST FOR MEMORY LEAK -------------------------------------------------------------------
+
+valgrind ./querier ../data/letters-2 ../data/letters-2/letters-2.index <<< "search or home"
+==3342468== Memcheck, a memory error detector
+==3342468== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3342468== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==3342468== Command: ./querier ../data/letters-2 ../data/letters-2/letters-2.index
+==3342468== 
+Query? 
+Query: search or home 
+score  2 doc  3: http://cs50tse.cs.dartmouth.edu/tse/letters/B.html 
+score  2 doc  1: http://cs50tse.cs.dartmouth.edu/tse/letters/index.html 
+score  1 doc  2: http://cs50tse.cs.dartmouth.edu/tse/letters/A.html 
+
+Query? ==3342468== 
+==3342468== HEAP SUMMARY:
+==3342468==     in use at exit: 0 bytes in 0 blocks
+==3342468==   total heap usage: 356 allocs, 356 frees, 86,933 bytes allocated
+==3342468== 
+==3342468== All heap blocks were freed -- no leaks are possible
+==3342468== 
+==3342468== For lists of detected and suppressed errors, rerun with: -s
+==3342468== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

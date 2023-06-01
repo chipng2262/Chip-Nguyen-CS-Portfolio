@@ -1,0 +1,31 @@
+Testing for indexer.c
+
+==========
+Test with no arguments
+
+Error in stderr: Invalid number of arguments!
+
+Test with 1 argument
+Error in stderr: Invalid number of arguments!
+
+Test with more than 3 arguments
+Error in stderr: Invalid number of arguments!
+
+Test with non-existent directory
+Error in stderr: Invalid/Non-existent page directory.
+
+Test with non-crawler-produced directory
+Error in stderr: Not a valid crawler-produced directory!
+
+Test with invalid (non-existent) path
+Error in stderr: Failed to create/open target directory.
+
+Test indexer with valid inputs: Index letters at depth 10 and 2 and wikipedia at depth 1.
+./indexer ../data/letters-10 ../data/letters-10/letters-10.index
+./indexer ../data/letters-2 ../data/letters-2/letters-2.index
+./indexer ../data/wikipedia-1 ../data/wikipedia-1/wikipedia-1.index
+
+Test indextest valid inputs: Build inverted index from output of indexers
+./indextest ../data/letters-10/letters-10.index ../data/letters-10/letters-10.indextest
+./indextest ../data/letters-2/letters-2.index ../data/letters-2/letters-2.indextest
+./indextest ../data/wikipedia-1/wikipedia-1.index ../data/wikipedia-1/wikipedia-1.indextest
